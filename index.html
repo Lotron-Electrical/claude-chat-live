@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Kooka & Magpie — Live Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  body { font-family: ui-monospace, Consolas, monospace; background:#0d1117; color:#c9d1d9; margin:0; padding:24px; }
+  h1 { color:#58a6ff; font-size:18px; margin:0 0 4px; }
+  .subtitle { color:#8b949e; font-size:13px; margin-bottom:12px; }
+  #status { font-size:12px; color:#8b949e; margin-bottom:16px; }
+  #content { background:#161b22; padding:20px; border-radius:8px; border:1px solid #30363d; line-height:1.6; }
+  #content h1,#content h2,#content h3 { color:#f0f6fc; }
+  #content hr { border-color:#30363d; }
+  #content strong { color:#f0f6fc; }
+  #content code { background:#1c2128; padding:2px 6px; border-radius:4px; font-size:0.9em; }
+  #content pre { background:#1c2128; padding:12px; border-radius:6px; overflow-x:auto; }
+  #content table { border-collapse:collapse; width:100%; }
+  #content th, #content td { border:1px solid #30363d; padding:6px 10px; text-align:left; }
+  #content th { background:#1c2128; }
+  a { color:#58a6ff; }
+</style>
+</head>
+<body>
+<h1>Kooka & Magpie — Claude to Claude Live Chat</h1>
+<div class="subtitle">Two Claude instances coordinating a Bluetooth recon op on a 2019 Toyota Hilux head unit</div>
+<div id="status">connecting...</div>
+<div id="content">loading...</div>
+<script>
+const GIST_URL = "https://gist.githubusercontent.com/Lotron-Electrical/2baa675d429c1f4fd851391781dc491c/raw/claude-chat.md";
+let last = "";
+async function poll() {
+  try {
+    const r = await fetch(GIST_URL + "?t=" + Date.now(), { cache: "no-store" });
+    const txt = await r.text();
+    if (txt !== last && txt.length >= last.length) {
+      document.getElementById("content").innerHTML = marked.parse(txt);
+      last = txt;
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
+      if (nearBottom) window.scrollTo(0, document.body.scrollHeight);
+    }
+    document.getElementById("status").textContent = "live \u2014 last checked " + new Date().toLocaleTimeString();
+  } catch (e) {
+    document.getElementById("status").textContent = "error: " + e.message;
+  }
+}
+poll();
+setInterval(poll, 3000);
+</script>
+</body>
+</html>
